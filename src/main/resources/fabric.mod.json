@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "extendedpicking",
+	"version": "${version}",
+	"name": "ExtendedPicking",
+	"description": "Easily extend the pick-block range!",
+	"authors": [
+		"Iamaprogrammer"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/extendedpicking/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"modmenu": [
+			"net.iamaprogrammer.compat.modmenu.ModMenuCompat"
+		],
+		"client": [
+			"net.iamaprogrammer.ExtendedPickingClient"
+		]
+	},
+	"mixins": [
+		"extendedpicking.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.6",
+		"minecraft": ">=1.20",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
