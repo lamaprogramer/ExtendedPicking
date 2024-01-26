@@ -15,6 +15,7 @@ public class ExtendedPickingClient implements ClientModInitializer {
     public void onInitializeClient() {
         CoreConfig defaultConfig = new CoreConfig();
         defaultConfig.setPickBlockRange((int)PlayerEntity.getReachDistance(false));
+        defaultConfig.useVanillaReach(false);
 
         CONFIG = new ConfigRegistry<>(defaultConfig, CoreConfig.class).register();
     }

@@ -114,7 +114,7 @@ public class ConfigScreen<C extends Config> extends Screen {
         public <T> Builder<C> addCyclingButtonWidget(Text desc, List<T> values, UpdateCallback<C, T> callback, LoadCallback<C, T> loadCallback) {
             CyclingButtonWidget<T> widget = CyclingButtonWidget.<T>builder((val) -> Text.of(String.valueOf(val)))
                     .values(values)
-                    .build(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, Text.translatable("toggleableitemframes.option.value"),
+                    .build(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, Text.translatable("extendedpicking.option.vanilla"),
                             (button, value) -> callback.modifyConfigCallback(this.config, value));
             widget.setValue(loadCallback.onLoad(this.config));
             this.widgets.add(new ConfigItem(desc, widget));

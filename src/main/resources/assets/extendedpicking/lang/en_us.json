@@ -1,3 +1,5 @@
 {
-  "extendedpicking.option.desc.pickblockrange": "Pick-Block Range: "
+  "extendedpicking.option.desc.pickblockrange": "Pick-Block Range: ",
+  "extendedpicking.option.desc.usevanillareach": "Use Vanilla Reach: ",
+  "extendedpicking.option.vanilla": "Vanilla"
 }

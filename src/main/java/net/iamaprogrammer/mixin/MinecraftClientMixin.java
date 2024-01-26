@@ -46,68 +46,73 @@ public abstract class MinecraftClientMixin {
 
     @Inject(method = "doItemPick", at = @At("HEAD"), cancellable = true)
     private void infPick(CallbackInfo ci) {
-        ci.cancel();
-        if (this.player != null) {
-            boolean bl = this.player.getAbilities().creativeMode;
+        if (!ExtendedPickingClient.CONFIG.shouldUseVanillaReach()) {
+            ci.cancel();
+            if (this.player != null) {
+                boolean bl = this.player.getAbilities().creativeMode;
 
-            BlockEntity blockEntity = null;
+                BlockEntity blockEntity = null;
 
-            HitResult target = getHitResult(ExtendedPickingClient.CONFIG.getPickBlockRange(), 1.0f);
-            HitResult.Type type = target.getType();
-            ItemStack itemStack;
-            if (type != HitResult.Type.MISS) {
-                if (type == net.minecraft.util.hit.HitResult.Type.BLOCK) {
-                    BlockPos blockPos = ((BlockHitResult) target).getBlockPos();
-                    BlockState blockState = this.world.getBlockState(blockPos);
-                    if (blockState.isAir()) {
-                        return;
-                    }
-
-                    Block block = blockState.getBlock();
-                    itemStack = block.getPickStack(this.world, blockPos, blockState);
-                    if (itemStack.isEmpty()) {
-                        return;
-                    }
-
-                    if (bl && Screen.hasControlDown() && blockState.hasBlockEntity()) {
-                        blockEntity = this.world.getBlockEntity(blockPos);
-                    }
-                } else {
-                    if (type != net.minecraft.util.hit.HitResult.Type.ENTITY || !bl) {
-                        return;
-                    }
-
-                    Entity entity = ((EntityHitResult) target).getEntity();
-                    itemStack = entity.getPickBlockStack();
-                    if (itemStack == null) {
-                        return;
-                    }
-                }
-
-                if (itemStack.isEmpty()) {
-                    String string = "";
+                HitResult target = getHitResult(
+                        ExtendedPickingClient.CONFIG.getPickBlockRange(),
+                        1.0f
+                );
+                HitResult.Type type = target.getType();
+                ItemStack itemStack;
+                if (type != HitResult.Type.MISS) {
                     if (type == net.minecraft.util.hit.HitResult.Type.BLOCK) {
-                        string = Registries.BLOCK.getId(this.world.getBlockState(((BlockHitResult) target).getBlockPos()).getBlock()).toString();
+                        BlockPos blockPos = ((BlockHitResult) target).getBlockPos();
+                        BlockState blockState = this.world.getBlockState(blockPos);
+                        if (blockState.isAir()) {
+                            return;
+                        }
+
+                        Block block = blockState.getBlock();
+                        itemStack = block.getPickStack(this.world, blockPos, blockState);
+                        if (itemStack.isEmpty()) {
+                            return;
+                        }
+
+                        if (bl && Screen.hasControlDown() && blockState.hasBlockEntity()) {
+                            blockEntity = this.world.getBlockEntity(blockPos);
+                        }
                     } else {
-                        string = Registries.ENTITY_TYPE.getId(((EntityHitResult) target).getEntity().getType()).toString();
+                        if (type != net.minecraft.util.hit.HitResult.Type.ENTITY || !bl) {
+                            return;
+                        }
+
+                        Entity entity = ((EntityHitResult) target).getEntity();
+                        itemStack = entity.getPickBlockStack();
+                        if (itemStack == null) {
+                            return;
+                        }
                     }
 
-                    LOGGER.warn("Picking on: [{}] {} gave null item", type, string);
-                } else {
-                    PlayerInventory playerInventory = this.player.getInventory();
-                    if (blockEntity != null) {
-                        this.addBlockEntityNbt(itemStack, blockEntity);
-                    }
-
-                    int i = playerInventory.getSlotWithStack(itemStack);
-                    if (bl) {
-                        playerInventory.addPickBlock(itemStack);
-                        this.interactionManager.clickCreativeStack(this.player.getStackInHand(Hand.MAIN_HAND), 36 + playerInventory.selectedSlot);
-                    } else if (i != -1) {
-                        if (PlayerInventory.isValidHotbarIndex(i)) {
-                            playerInventory.selectedSlot = i;
+                    if (itemStack.isEmpty()) {
+                        String string = "";
+                        if (type == net.minecraft.util.hit.HitResult.Type.BLOCK) {
+                            string = Registries.BLOCK.getId(this.world.getBlockState(((BlockHitResult) target).getBlockPos()).getBlock()).toString();
                         } else {
-                            this.interactionManager.pickFromInventory(i);
+                            string = Registries.ENTITY_TYPE.getId(((EntityHitResult) target).getEntity().getType()).toString();
+                        }
+
+                        LOGGER.warn("Picking on: [{}] {} gave null item", type, string);
+                    } else {
+                        PlayerInventory playerInventory = this.player.getInventory();
+                        if (blockEntity != null) {
+                            this.addBlockEntityNbt(itemStack, blockEntity);
+                        }
+
+                        int i = playerInventory.getSlotWithStack(itemStack);
+                        if (bl) {
+                            playerInventory.addPickBlock(itemStack);
+                            this.interactionManager.clickCreativeStack(this.player.getStackInHand(Hand.MAIN_HAND), 36 + playerInventory.selectedSlot);
+                        } else if (i != -1) {
+                            if (PlayerInventory.isValidHotbarIndex(i)) {
+                                playerInventory.selectedSlot = i;
+                            } else {
+                                this.interactionManager.pickFromInventory(i);
+                            }
                         }
                     }
                 }
@@ -116,7 +121,7 @@ public abstract class MinecraftClientMixin {
     }
 
     @Unique
-    private HitResult getHitResult(int maxDistance, float tickDelta) {
+    private HitResult getHitResult(double maxDistance, float tickDelta) {
         BlockHitResult blockHitResult = (BlockHitResult) this.player.raycast(maxDistance, tickDelta, false);
 
         Vec3d point1 = this.player.getCameraPosVec(tickDelta);

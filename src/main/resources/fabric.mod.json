@@ -8,8 +8,8 @@
 		"Iamaprogrammer"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/lamaprogramer/ExtendedPicking",
+		"sources": "https://github.com/lamaprogramer/ExtendedPicking"
 	},
 	"license": "MIT",
 	"icon": "assets/extendedpicking/icon.png",
